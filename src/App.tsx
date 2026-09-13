@@ -21,7 +21,9 @@ import {
   Code,
   AppWindow,
   Trophy,
+  Loader2,
 } from 'lucide-react';
+import resumePDF from './assets/Resume.pdf';
 
 
 type Project = {
@@ -184,6 +186,7 @@ const personalProjects: Project[] = [
 function App() {
   const [isDark, setIsDark] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem('portfolio-theme');
@@ -198,14 +201,18 @@ function App() {
   const toggleTheme = () => setIsDark((current) => !current);
 
   const handleResumeDownload = () => {
-    const resumeWindow = window.open('', '_blank');
-    if (!resumeWindow) return;
-    resumeWindow.document.write(buildResumeHTML());
-    resumeWindow.document.close();
+    setLoading(true);
+
+    const link = document.createElement('a');
+    link.href = resumePDF;
+    link.download = 'Resume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
     setTimeout(() => {
-      resumeWindow.focus();
-      resumeWindow.print();
-    }, 400);
+      setLoading(false);
+    }, 800);
   };
 
   return (
@@ -252,8 +259,15 @@ function App() {
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-          <button className="header-cta" onClick={handleResumeDownload}>
-            Resume <Download size={14} />
+          <button className="header-cta" onClick={handleResumeDownload} disabled={loading}>
+            {loading ? (
+              <>
+                <Loader2 className="spinner" size={18} />
+                Downloading...
+              </>
+            ) : (
+              <>Resume <Download size={14} /></>
+            )}
           </button>
           <button
             className="mobile-menu"
@@ -283,8 +297,15 @@ function App() {
               <a className="button button-primary" href="#work">
                 Explore my work <ArrowUpRight size={17} />
               </a>
-              <button className="text-link" onClick={handleResumeDownload}>
-                Download resume <span>↓</span>
+              <button className="text-link" onClick={handleResumeDownload} disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="spinner" size={18} />
+                    Downloading...
+                  </>
+                ) : (
+                  <>Download resume <span>↓</span></>
+                )}
               </button>
             </div>
             <div className="hero-meta">
@@ -332,12 +353,12 @@ function App() {
             <p className="kicker">Summary</p>
             <h2>The signal, not <em>the noise.</em></h2>
             <p className="section-description" style={{ maxWidth: "none", padding: "3rem" }}>
-              Full Stack Engineer with 5+ years of experience building 
-              scalable backend systems and production-grade web applications 
-              using Django and Python. Specialized in designing modular 
-              architectures, optimizing backend performance, and delivering 
-              end-to-end systems in EdTech and HealthTech domains. Proven 
-              ability to lead teams, own product development, and deploy 
+              Full Stack Engineer with 5+ years of experience building
+              scalable backend systems and production-grade web applications
+              using Django and Python. Specialized in designing modular
+              architectures, optimizing backend performance, and delivering
+              end-to-end systems in EdTech and HealthTech domains. Proven
+              ability to lead teams, own product development, and deploy
               reliable applications in production environments.
             </p>
           </div>
@@ -468,8 +489,15 @@ function App() {
                 >
                   Start a conversation <Mail size={17} />
                 </a>
-                <button className="button button-outline-light" onClick={handleResumeDownload}>
-                  Download resume <Download size={16} />
+                <button className="button button-outline-light" onClick={handleResumeDownload} disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="spinner" size={18} />
+                      Downloading...
+                    </>
+                  ) : (
+                    <>Download resume <Download size={14} /></>
+                  )}
                 </button>
               </div>
             </div>
@@ -579,121 +607,5 @@ function ProjectCard({
   );
 }
 
-function buildResumeHTML(): string {
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<title>Sri Balaji S. — Resume</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<style>
-  @page { margin: 0.6in; }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: Georgia, 'Times New Roman', serif; color: #1a1a1a; line-height: 1.5; font-size: 11pt; }
-  .header { border-bottom: 2px solid #1a1a1a; padding-bottom: 14px; margin-bottom: 20px; }
-  .header h1 { font-size: 24pt; letter-spacing: -0.02em; margin-bottom: 4px; }
-  .header p { font-size: 10pt; color: #555; }
-  .header .contact { font-size: 9pt; color: #555; margin-top: 6px; }
-  .header .contact a { color: #555; text-decoration: none; }
-  h2 { font-size: 12pt; text-transform: uppercase; letter-spacing: 0.08em; margin: 22px 0 10px; padding-bottom: 5px; border-bottom: 1px solid #ccc; }
-  .job { margin-bottom: 16px; }
-  .job-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
-  .job-title { font-weight: bold; font-size: 11pt; }
-  .job-period { font-size: 9pt; color: #777; }
-  .job-company { font-style: italic; color: #444; margin-bottom: 8px; font-size: 10pt; }
-  .job ul { padding-left: 18px; }
-  .job li { font-size: 10pt; margin-bottom: 5px; line-height: 1.45; }
-  .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 30px; }
-  .skill-group h3 { font-size: 10pt; margin-bottom: 4px; }
-  .skill-group p { font-size: 9.5pt; color: #444; }
-  .projects { display: grid; gap: 10px; }
-  .project { font-size: 10pt; }
-  .project strong { font-size: 10pt; }
-  .project span { color: #666; font-size: 9pt; }
-  .section { page-break-inside: avoid; }
-  @media print { body { -webkit-print-color-adjust: exact; } }
-</style>
-</head>
-<body>
-  <div class="header">
-    <h1>Sri Balaji S.</h1>
-    <p>Full Stack Engineer / Tech Lead</p>
-    <div class="contact">
-      sribalaji791990@gmail.com &nbsp;·&nbsp; India (Hybrid) &nbsp;·&nbsp; 5+ years experience
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Summary</h2>
-    <p style="font-size:10pt;color:#333;line-height:1.5;">
-      Senior full stack engineer and tech lead focused on thoughtful architecture,
-      dependable APIs, and products that make complex work feel simple. 5+ years
-      building scalable backend systems for real-world healthcare operations.
-    </p>
-  </div>
-
-  <div class="section">
-    <h2>Experience</h2>
-    <div class="job">
-      <div class="job-header">
-        <span class="job-title">Full Stack Engineer / Tech Lead</span>
-        <span class="job-period">Feb 2021 — Apr 2026</span>
-      </div>
-      <div class="job-company">Telth Healthcare Private Limited · Hybrid · India</div>
-      <p style="font-size:10pt;color:#444;margin-bottom:8px;">
-        Designed and built scalable backend systems for real-world healthcare
-        operations, balancing delivery speed with long-term maintainability.
-      </p>
-      <ul>
-        <li>Architected modular systems with clean service-layer patterns and reusable domain components.</li>
-        <li>Designed REST APIs, role-based access, and authentication systems for production applications.</li>
-        <li>Deployed and managed production applications on AWS and Docker with reliable operational workflows.</li>
-        <li>Led a cross-functional team across development, operations, and delivery timelines.</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Projects</h2>
-    <div class="projects">
-      <div class="project">
-        <strong>NATLife Platform</strong> — <span>Scalable Django backend system</span>
-        <p style="margin-top:3px;">Modular multi-app platform with clean separation of business logic, reusable API components, and role-based permissions.</p>
-      </div>
-      <div class="project">
-        <strong>Online University Admin Platform</strong> — <span>Academic operations platform</span>
-        <p style="margin-top:3px;">End-to-end admin experience for student lifecycle and academic workflows including admissions, onboarding, scheduling, and results.</p>
-      </div>
-      <div class="project">
-        <strong>Healthcare Worker Onboarding</strong> — <span>Workflow automation</span>
-        <p style="margin-top:3px;">Streamlined onboarding platform to manage healthcare professionals and make workforce operations more efficient.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>Technical Skills</h2>
-    <div class="skills-grid">
-      <div class="skill-group">
-        <h3>Backend & APIs</h3>
-        <p>Python, Django & DRF, REST API design, Service-layer architecture</p>
-      </div>
-      <div class="skill-group">
-        <h3>Data & Systems</h3>
-        <p>PostgreSQL, MySQL, MongoDB, Supabase, Schema design</p>
-      </div>
-      <div class="skill-group">
-        <h3>Architecture</h3>
-        <p>Modular monoliths, Domain separation, Multi-module platforms, Reusable components</p>
-      </div>
-      <div class="skill-group">
-        <h3>Delivery & Ops</h3>
-        <p>AWS EC2, Docker, DNS & domains, Environment configuration</p>
-      </div>
-    </div>
-  </div>
-</body>
-</html>`;
-}
 
 export default App;
