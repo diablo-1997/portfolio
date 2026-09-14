@@ -187,6 +187,7 @@ function App() {
   const [isDark, setIsDark] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem('portfolio-theme');
@@ -509,7 +510,7 @@ function App() {
       </main>
 
       <footer className="site-footer">
-        <span>© 2026 <em>Sri Balaji S.</em></span>
+        <span>© {currentYear} <em>Sri Balaji S.</em></span>
         <span>Full stack engineer · system designer</span>
         <div className="footer-links">
           <a href="mailto:sribalaji791990@gmail.com" aria-label="Email">
