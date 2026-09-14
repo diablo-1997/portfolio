@@ -186,7 +186,6 @@ const personalProjects: Project[] = [
 function App() {
   const [isDark, setIsDark] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
@@ -200,21 +199,6 @@ function App() {
   }, [isDark]);
 
   const toggleTheme = () => setIsDark((current) => !current);
-
-  const handleResumeDownload = () => {
-    setLoading(true);
-
-    const link = document.createElement('a');
-    link.href = resumePDF;
-    link.download = 'Resume.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 800);
-  };
 
   return (
     <div className="site-shell">
@@ -260,16 +244,9 @@ function App() {
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-          <button className="header-cta" onClick={handleResumeDownload} disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="spinner" size={18} />
-                Downloading...
-              </>
-            ) : (
-              <>Resume <Download size={14} /></>
-            )}
-          </button>
+          <ResumeDownloadButton className="header-cta">
+            Resume <Download size={14} />
+          </ResumeDownloadButton>
           <button
             className="mobile-menu"
             onClick={() => setMenuOpen((open) => !open)}
@@ -298,16 +275,9 @@ function App() {
               <a className="button button-primary" href="#work">
                 Explore my work <ArrowUpRight size={17} />
               </a>
-              <button className="text-link" onClick={handleResumeDownload} disabled={loading}>
-                {loading ? (
-                  <>
-                    <Loader2 className="spinner" size={18} />
-                    Downloading...
-                  </>
-                ) : (
-                  <>Download resume <span>↓</span></>
-                )}
-              </button>
+              <ResumeDownloadButton className="text-link">
+                Download resume <span>↓</span>
+              </ResumeDownloadButton>
             </div>
             <div className="hero-meta">
               <span>
@@ -490,16 +460,9 @@ function App() {
                 >
                   Start a conversation <Mail size={17} />
                 </a>
-                <button className="button button-outline-light" onClick={handleResumeDownload} disabled={loading}>
-                  {loading ? (
-                    <>
-                      <Loader2 className="spinner" size={18} />
-                      Downloading...
-                    </>
-                  ) : (
-                    <>Download resume <Download size={14} /></>
-                  )}
-                </button>
+                <ResumeDownloadButton className="button button-outline-light">
+                  Download resume <Download size={14} />
+                </ResumeDownloadButton>
               </div>
             </div>
             <div className="contact-mark">
@@ -540,6 +503,39 @@ function App() {
     </div>
   );
 }
+
+
+function ResumeDownloadButton({ className, children } : 
+  { className: string, children: React.ReactNode }
+) {
+  const [loading, setLoading] = useState(false);
+
+  const handleResumeDownload = () => {
+    setLoading(true);
+
+    const link = document.createElement('a');
+    link.href = resumePDF;
+    link.download = 'Resume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 800);
+  };
+
+  return (
+    <button className={className} onClick={handleResumeDownload} disabled={loading}>
+      {loading ? (
+        <>
+          <Loader2 className="spinner" size={18} />
+          Starting download...
+        </>
+      ) : children}
+    </button>
+  );
+};
 
 function ProjectCard({
   project,
